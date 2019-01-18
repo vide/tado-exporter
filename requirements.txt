@@ -1,0 +1,2 @@
+git+git://github.com/vide/libtado.git@3f1e0c2#egg=libtado
+prometheus-client==0.5.0
