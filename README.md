@@ -36,7 +36,7 @@ TADO_USERNAME=your.tado@username
 
 The only one that need explanation is `TADO_CLIENT_SECRET`: this is a secret token you have to extrapolate manually from the Tadoº website when logging in with your username and password. 
 
-* Open your browser of choiche (Firefox)
+* Open your browser of choice (Firefox)
 * Fire up the developer tools
 * Go to the Network tab
 * Go to https://my.tado.com and login with your user and password
@@ -44,7 +44,7 @@ The only one that need explanation is `TADO_CLIENT_SECRET`: this is a secret tok
 * Go to the Params tab (form data)
 * There you will find your `client_secret`
 
-Since it's a form value that the login page is submitting it's probably some JS in the page that derives it somehow from your user/password. I will investigate further.
+Since it's a form value that the login page is submitting there's probably some JS in the page that derives it somehow from your user/password. I will investigate this further.
 
 ## Configure Prometheus scraper
 
