@@ -13,7 +13,11 @@ if __name__ == '__main__':
     print("Starting tado exporter")
     start_http_server(8000)
     print("Connecting to tado API using account " + username)
-    tado = Tado(username, password, client_secret)
+    try:
+        tado = Tado(username, password, client_secret)
+    except KeyError:
+        print("Authentication failed. Check your username, password or client secret.")
+        exit(1)
     temp = Gauge('tado_temperature', 'Temperature as read by the sensor', 
                   labelnames=['zone_name'],
                   unit='celsius')
@@ -22,7 +26,11 @@ if __name__ == '__main__':
                   unit='percentage')
     print("Exporter ready")
     while True:
-        temp.labels('zone1').set(tado.get_state(1)['sensorDataPoints']['insideTemperature']['celsius'])
-        humi.labels('zone1').set(tado.get_state(1)['sensorDataPoints']['humidity']['percentage'])
+        try:
+            temp.labels('zone1').set(tado.get_state(1)['sensorDataPoints']['insideTemperature']['celsius'])
+            humi.labels('zone1').set(tado.get_state(1)['sensorDataPoints']['humidity']['percentage'])
+        except:
+            print("Cannot read data from Tado API. Will retry later...")
+            continue
         # TODO: implement a drift-free loop
         sleep(refresh_rate)
