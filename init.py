@@ -3,6 +3,7 @@ from time import sleep
 from libtado.api import Tado
 from prometheus_client import start_http_server, Gauge
 
+
 if __name__ == '__main__':
     # Start up the server to expose the metrics.
     username = environ["TADO_USERNAME"]
@@ -24,13 +25,18 @@ if __name__ == '__main__':
     humi = Gauge('tado_humidity', 'Humidity as read by the sensor', 
                   labelnames=['zone_name'],
                   unit='percentage')
+    heat = Gauge('tado_heating', 'Heating power', 
+                  labelnames=['zone_name'],
+                  unit='percentage')
     print("Exporter ready")
     while True:
         try:
-            temp.labels('zone1').set(tado.get_state(1)['sensorDataPoints']['insideTemperature']['celsius'])
-            humi.labels('zone1').set(tado.get_state(1)['sensorDataPoints']['humidity']['percentage'])
+            for zone in tado.get_zones():
+                temp.labels('zone_' + str(zone['id'])).set(tado.get_state(zone['id'])['sensorDataPoints']['insideTemperature']['celsius'])
+                humi.labels('zone_' + str(zone['id'])).set(tado.get_state(zone['id'])['sensorDataPoints']['humidity']['percentage'])
+                heat.labels('zone_' + str(zone['id'])).set(tado.get_state(zone['id'])['activityDataPoints']['heatingPower']['percentage'])
         except:
-            print("Cannot read data from Tado API. Will retry later...")
-            continue
-        # TODO: implement a drift-free loop
-        sleep(refresh_rate)
+            print("Cannot read data from Tado API. Will retry later.")
+        finally:
+            # TODO: implement a drift-free loop
+            sleep(refresh_rate)
